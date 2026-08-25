@@ -1,0 +1,487 @@
+    return """
+    <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Pay Minimum Tax | Ultra-Premium AI Receptionist</title>
+    <!-- Google Fonts: Montserrat & Inter for ultra-modern premium feel -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 (Free Icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Animate.css for subtle entrance animations -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: radial-gradient(circle at 20% 30%, #0A0C10 0%, #030507 100%);
+            font-family: 'Inter', 'Montserrat', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+            padding: 1.5rem;
+        }
+
+        /* Animated gradient orbs background */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(120px);
+            opacity: 0.3;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .orb-1 {
+            width: 70vw;
+            height: 70vw;
+            background: radial-gradient(circle, #8A2BE2, #4A00E0);
+            top: -20vh;
+            right: -30vw;
+            animation: float 20s infinite alternate ease-in-out;
+        }
+
+        .orb-2 {
+            width: 60vw;
+            height: 60vw;
+            background: radial-gradient(circle, #00B4DB, #0083B0);
+            bottom: -30vh;
+            left: -20vw;
+            opacity: 0.2;
+            animation: float 25s infinite alternate-reverse;
+        }
+
+        .orb-3 {
+            width: 40vw;
+            height: 40vw;
+            background: radial-gradient(circle, #F0A500, #E05A00);
+            top: 40vh;
+            right: -10vw;
+            opacity: 0.15;
+            filter: blur(100px);
+            animation: drift 18s infinite alternate;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(5%, 5%) scale(1.05); }
+        }
+
+        @keyframes drift {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-8%, 5%) rotate(5deg); }
+        }
+
+        /* Main premium glass-card container */
+        .premium-container {
+            position: relative;
+            z-index: 10;
+            max-width: 1300px;
+            width: 100%;
+            background: rgba(10, 14, 23, 0.65);
+            backdrop-filter: blur(14px);
+            border-radius: 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.5), 0 0 0 0.5px rgba(255, 255, 255, 0.02) inset;
+            transition: all 0.4s ease;
+            overflow: hidden;
+        }
+
+        /* subtle grid pattern overlay */
+        .premium-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 32px 32px;
+            pointer-events: none;
+        }
+
+        /* Header area with shiny text */
+        .hero-section {
+            padding: 3rem 3rem 1.8rem 3rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.02);
+            backdrop-filter: blur(10px);
+            padding: 0.6rem 1.8rem;
+            border-radius: 80px;
+            margin-bottom: 2rem;
+            border: 0.5px solid rgba(255,255,255,0.1);
+        }
+
+        .brand i {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, #C0A9FF, #A67CFF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .brand span {
+            font-weight: 700;
+            font-size: 1.5rem;
+            letter-spacing: -0.02em;
+            background: linear-gradient(120deg, #FFFFFF, #BFB5FF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FFFFFF 20%, #D6B0FF 50%, #A97CFF 80%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            letter-spacing: -0.02em;
+            margin-bottom: 1.2rem;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .tagline {
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: rgba(230, 230, 255, 0.8);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.4;
+            letter-spacing: -0.2px;
+        }
+
+        .glow-text {
+            background: linear-gradient(120deg, #D9B8FF, #B47CFF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 600;
+        }
+
+        /* Feature cards grid */
+        .features-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            padding: 3rem;
+            justify-content: center;
+        }
+
+        .feature-card {
+            flex: 1;
+            min-width: 250px;
+            background: rgba(12, 16, 28, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 2rem;
+            padding: 1.8rem 1.5rem;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            box-shadow: 0 8px 20px -8px rgba(0,0,0,0.4);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(138, 43, 226, 0.5);
+            background: rgba(18, 22, 40, 0.8);
+            box-shadow: 0 20px 30px -12px rgba(106, 13, 173, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            background: linear-gradient(145deg, #A97CFF, #7A4FCF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            color: #F0EEFF;
+        }
+
+        .feature-card p {
+            color: #9CA3CF;
+            line-height: 1.5;
+            font-weight: 400;
+            font-size: 0.95rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(138, 43, 226, 0.2);
+            border-radius: 40px;
+            padding: 0.2rem 0.9rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 1rem;
+            color: #C9A9FF;
+            border: 0.5px solid rgba(138, 43, 226, 0.5);
+        }
+
+        /* realtime + jwt demo section (premium interactive) */
+        .integration-panel {
+            margin: 0 3rem 3rem 3rem;
+            background: rgba(0, 0, 0, 0.45);
+            border-radius: 2rem;
+            border: 1px solid rgba(255,255,255,0.06);
+            backdrop-filter: blur(16px);
+            overflow: hidden;
+        }
+
+        .panel-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            padding: 1.5rem 2rem;
+            background: rgba(20, 24, 36, 0.6);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .panel-header h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #E0D4FF, #B695FF);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(0,0,0,0.5);
+            padding: 0.4rem 1rem;
+            border-radius: 60px;
+        }
+
+        .led {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #3be05e;
+            box-shadow: 0 0 6px #00ff88;
+            animation: pulse 1.8s infinite;
+        }
+
+        .led.inactive {
+            background-color: #ff5e6e;
+            box-shadow: none;
+            animation: none;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; transform: scale(0.9);}
+            100% { opacity: 1; transform: scale(1.2);}
+        }
+
+        .demo-content {
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .jwt-section, .ghl-section {
+            background: rgba(8, 10, 18, 0.7);
+            border-radius: 1.5rem;
+            padding: 1.6rem;
+            transition: all 0.2s;
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #CABDFF;
+        }
+
+        .token-area {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 1rem;
+        }
+
+        .token-input {
+            flex: 1;
+            background: #0C0F17;
+            border: 1px solid #2A2F42;
+            border-radius: 60px;
+            padding: 0.9rem 1.2rem;
+            font-family: monospace;
+            color: #D9E0FF;
+            font-size: 0.9rem;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .token-input:focus {
+            border-color: #8A2BE2;
+            box-shadow: 0 0 8px rgba(138,43,226,0.4);
+        }
+
+        .premium-btn {
+            background: linear-gradient(105deg, #5E2A9C, #7F3FCF);
+            border: none;
+            border-radius: 60px;
+            padding: 0 1.6rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            letter-spacing: 0.3px;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        .premium-btn i {
+            font-size: 0.9rem;
+        }
+
+        .premium-btn:hover {
+            transform: scale(0.98);
+            background: linear-gradient(105deg, #6c33b0, #9055e0);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .message {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            background: rgba(0,0,0,0.5);
+            padding: 0.6rem 1rem;
+            border-radius: 40px;
+            color: #B8C7FF;
+            display: inline-block;
+            width: auto;
+        }
+
+        .ghl-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 0.9rem;
+            background: #0B0E18;
+            padding: 0.5rem 1.2rem;
+            border-radius: 60px;
+        }
+
+        .data-stream {
+            background: #07090F;
+            border-radius: 1rem;
+            padding: 0.8rem 1.2rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: #A0E7FF;
+            border-left: 3px solid #A97CFF;
+            word-break: break-word;
+        }
+
+        footer {
+            text-align: center;
+            padding: 1.8rem;
+            font-size: 0.75rem;
+            color: #6E7399;
+            border-top: 1px solid rgba(255,255,255,0.03);
+        }
+
+        @media (max-width: 780px) {
+            h1 { font-size: 2.4rem; }
+            .tagline { font-size: 1rem; }
+            .hero-section { padding: 2rem 1.5rem; }
+            .features-grid { padding: 1.5rem; }
+            .integration-panel { margin: 0 1.5rem 2rem 1.5rem; }
+            .panel-header { flex-direction: column; gap: 12px; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<div class="premium-container animate__animated animate__fadeInUp animate__fast">
+    <div class="hero-section">
+        <div class="brand">
+            <i class="fas fa-microphone-alt"></i>
+            <span>Pay Minimum Tax</span>
+        </div>
+        <h1>Your Ultimate AI Receptionist</h1>
+        <div class="tagline">
+            <span class="glow-text">Robust JWT Authentication</span> · 
+            <span class="glow-text">Real-Time GoHighLevel Integration</span><br>
+            Elevate your business communications with enterprise-grade intelligence.
+        </div>
+    </div>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-shield-alt"></i></div>
+            <h3>JWT Secure Core</h3>
+            <p>Military-grade token authentication ensuring every interaction is verified and encrypted.</p>
+            <div class="badge"><i class="fas fa-lock"></i> RFC 7519 compliant</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+            <h3>GoHighLevel Sync</h3>
+            <p>Real-time contact, pipeline & engagement sync — seamless CRM automation for modern agencies.</p>
+            <div class="badge"><i class="fas fa-bolt"></i> Webhook + Live Events</div>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon"><i class="fas fa-headset"></i></div>
+            <h3>24/7 Voice AI</h3>
+            <p>Human-like conversational AI that answers, books, and nurtures leads around the clock.</p>
+            <div class="badge"><i class="fas fa-robot"></i> NLP + Sentiment</div>
+        </div>
+    </div>
+
+    <!-- interactive JWT + GoHighLevel integration demo -->
+    <footer>
+        <i class="fas fa-shield-heart"></i> Enterprise-grade security · Real-time GHL API · JWT Stateless Authentication <br>
+        © 2025 Pay Minimum Tax — The future of AI receptionist technology.
+    </footer>
+</div>
+
+
+</body>
+</html>
