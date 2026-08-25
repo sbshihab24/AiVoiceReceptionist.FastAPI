@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pay Minimum Tax — Demo Console</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#08090e;--surface:#0f1119;--surface2:#161924;--border:#1e2235;--accent:#8b5cf6;--accent2:#a78bfa;--green:#22c55e;--red:#ef4444;--yellow:#eab308;--blue:#3b82f6;--text:#e2e8f0;--text2:#94a3b8;--text3:#64748b}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden}
+.app{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr;height:100vh;gap:0}
+.header{grid-column:1/-1;padding:1rem 2rem;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:10px;font-size:1.3rem;font-weight:700}
+.logo i{color:var(--accent);font-size:1.5rem}
+.logo span{background:linear-gradient(135deg,#fff,var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.status-bar{display:flex;gap:1rem;align-items:center}
+.status-dot{width:10px;height:10px;border-radius:50%;background:var(--text3)}
+.status-dot.active{background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+.status-label{font-size:.8rem;color:var(--text2)}
+
+/* Left Panel - Call UI */
+.call-panel{display:flex;flex-direction:column;border-right:1px solid var(--border);overflow:hidden}
+.call-panel-header{padding:1rem 1.5rem;background:var(--surface);border-bottom:1px solid var(--border);font-weight:600;font-size:.9rem;color:var(--text2);display:flex;align-items:center;gap:8px}
+.call-ui{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;gap:2rem;background:radial-gradient(ellipse at center,rgba(139,92,246,.05),transparent 70%)}
+.call-avatar{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#6d28d9);display:flex;align-items:center;justify-content:center;font-size:3rem;color:#fff;position:relative}
+.call-avatar.calling::after{content:'';position:absolute;inset:-8px;border-radius:50%;border:2px solid var(--accent);animation:ring 1.5s infinite}
+@keyframes ring{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.3);opacity:0}}
+.call-status{font-size:1.1rem;font-weight:600;color:var(--text2)}
+.call-timer{font-family:'JetBrains Mono',monospace;font-size:2rem;font-weight:700;color:var(--text);letter-spacing:2px}
+.call-btn{width:72px;height:72px;border-radius:50%;border:none;font-size:1.5rem;color:#fff;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center}
+.call-btn.start{background:var(--green);box-shadow:0 4px 20px rgba(34,197,94,.3)}
+.call-btn.start:hover{transform:scale(1.08);box-shadow:0 6px 25px rgba(34,197,94,.5)}
+.call-btn.end{background:var(--red);box-shadow:0 4px 20px rgba(239,68,68,.3)}
+.call-btn.end:hover{transform:scale(1.08)}
+.waveform{display:flex;align-items:center;gap:3px;height:40px}
+.waveform .bar{width:4px;background:var(--accent);border-radius:2px;transition:height .1s;height:4px}
+.waveform.active .bar{animation:wave .8s infinite ease-in-out}
+.waveform.active .bar:nth-child(1){animation-delay:0s}
+.waveform.active .bar:nth-child(2){animation-delay:.1s}
+.waveform.active .bar:nth-child(3){animation-delay:.2s}
+.waveform.active .bar:nth-child(4){animation-delay:.3s}
+.waveform.active .bar:nth-child(5){animation-delay:.4s}
+.waveform.active .bar:nth-child(6){animation-delay:.3s}
+.waveform.active .bar:nth-child(7){animation-delay:.2s}
+.waveform.active .bar:nth-child(8){animation-delay:.1s}
+@keyframes wave{0%,100%{height:4px}50%{height:30px}}
+
+/* Transcript area */
+.transcript-area{width:100%;max-width:500px;max-height:200px;overflow-y:auto;background:var(--surface);border-radius:12px;padding:1rem;border:1px solid var(--border);scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.transcript-msg{padding:6px 10px;margin:4px 0;border-radius:8px;font-size:.85rem;line-height:1.4;max-width:85%}
+.transcript-msg.user{background:rgba(139,92,246,.15);color:var(--accent2);margin-left:auto;text-align:right}
+.transcript-msg.assistant{background:rgba(59,130,246,.1);color:#93c5fd}
+
+/* Right Panel - Debug */
+.debug-panel{display:flex;flex-direction:column;overflow:hidden}
+.debug-panel-header{padding:1rem 1.5rem;background:var(--surface);border-bottom:1px solid var(--border);font-weight:600;font-size:.9rem;color:var(--text2);display:flex;align-items:center;justify-content:space-between}
+.debug-panel-header .clear-btn{background:none;border:1px solid var(--border);color:var(--text3);padding:4px 12px;border-radius:6px;font-size:.75rem;cursor:pointer}
+.debug-panel-header .clear-btn:hover{border-color:var(--accent);color:var(--accent)}
+.debug-log{flex:1;overflow-y:auto;padding:1rem;font-family:'JetBrains Mono',monospace;font-size:.8rem;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.debug-entry{padding:8px 12px;margin:4px 0;border-radius:8px;background:var(--surface);border-left:3px solid var(--border);display:flex;gap:10px;align-items:flex-start;animation:fadeIn .3s}
+@keyframes fadeIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.debug-entry .time{color:var(--text3);flex-shrink:0;font-size:.7rem;padding-top:2px}
+.debug-entry .msg{color:var(--text);word-break:break-word;line-height:1.5}
+.debug-entry.info{border-left-color:var(--blue)}
+.debug-entry.success{border-left-color:var(--green)}
+.debug-entry.warn{border-left-color:var(--yellow)}
+.debug-entry.error{border-left-color:var(--red)}
+.debug-entry.call{border-left-color:var(--accent)}
+
+/* Booking test panel */
+.booking-panel{padding:1rem;background:var(--surface);border-top:1px solid var(--border)}
+.booking-panel h3{font-size:.85rem;color:var(--text2);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.booking-form{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.booking-form input,.booking-form select{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-size:.8rem;font-family:'Inter',sans-serif;outline:none}
+.booking-form input:focus{border-color:var(--accent)}
+.booking-form .full{grid-column:1/-1}
+.test-btn{grid-column:1/-1;background:linear-gradient(135deg,var(--accent),#6d28d9);border:none;color:#fff;padding:10px;border-radius:8px;font-weight:600;font-size:.85rem;cursor:pointer;transition:all .2s}
+.test-btn:hover{opacity:.9;transform:translateY(-1px)}
+.test-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* Mobile Responsiveness Improvements */
+@media(max-width:900px){
+  .app {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto;
+    height: auto;
+    min-height: 100vh;
+  }
+  .header {
+    padding: 0.8rem 1rem;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .logo {
+    font-size: 1.1rem;
+  }
+  .call-panel {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    height: auto;
+  }
+  .call-ui {
+    padding: 2rem 1rem;
+  }
+  .call-avatar {
+    width: 100px;
+    height: 100px;
+    font-size: 2.5rem;
+  }
+  .call-timer {
+    font-size: 1.5rem;
+  }
+  .debug-panel {
+    height: 500px; /* Fixed height for log area on mobile */
+  }
+  .booking-form {
+    grid-template-columns: 1fr;
+  }
+  .transcript-area {
+    max-height: 150px;
+  }
+}
+
+@media(max-width:480px){
+  .logo span:last-child {
+    display: none; /* Hide 'Demo Console' text on very small screens */
+  }
+  .status-bar {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <div class="logo"><i class="fas fa-microphone-alt"></i><span>Pay Minimum Tax</span> <span style="font-weight:400;font-size:.9rem;color:var(--text3)">Demo Console</span></div>
+    <div class="status-bar">
+      <div id="statusDot" class="status-dot"></div>
+      <span id="statusLabel" class="status-label">Disconnected</span>
+    </div>
+  </div>
+
+  <div class="call-panel">
+    <div class="call-panel-header"><i class="fas fa-phone-alt"></i> Voice Call</div>
+    <div class="call-ui">
+      <div id="callAvatar" class="call-avatar"><i class="fas fa-headset"></i></div>
+      <div id="callStatus" class="call-status">Ready to call</div>
+      <div id="callTimer" class="call-timer">00:00</div>
+      <div id="waveform" class="waveform">
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+        <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+      </div>
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; width: 100%; max-width: 280px; margin-bottom: 10px;">
+        <label for="demoPhone" style="font-size: 0.75rem; color: var(--text2); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Your Phone Number (SMS Testing)</label>
+        <input id="demoPhone" type="text" placeholder="+1234567890" style="background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 8px; font-size: 0.85rem; width: 100%; text-align: center; outline: none; transition: border-color 0.2s;" value="+1">
+      </div>
+      <button id="callBtn" class="call-btn start" onclick="toggleCall()"><i class="fas fa-phone"></i></button>
+      <div id="transcriptArea" class="transcript-area" style="display:none"></div>
+    </div>
+  </div>
+
+  <div class="debug-panel">
+    <div class="debug-panel-header">
+      <span><i class="fas fa-terminal"></i> Debug Log</span>
+      <button class="clear-btn" onclick="clearDebug()">Clear</button>
+    </div>
+    <div id="debugLog" class="debug-log"></div>
+    <div class="booking-panel">
+      <h3><i class="fas fa-calendar-check"></i> Test Booking Flow</h3>
+      <div class="booking-form">
+        <input id="bPhone" type="text" placeholder="Phone" value="+10000000000">
+        <input id="bEmail" type="email" placeholder="Email" value="test@example.com">
+        <input id="bName" type="text" placeholder="Name" value="Test User">
+        <input id="bCalendar" type="text" placeholder="Calendar ID" value="test_cal_id">
+        <input id="bSlot" type="text" placeholder="Slot (ISO)" value="2026-06-10T10:00:00Z" class="full">
+        <input id="bSummary" type="text" placeholder="Call Summary" value="Wants to book an appointment" class="full">
+        <button id="testBookingBtn" class="test-btn" onclick="testBooking()"><i class="fas fa-play"></i> Test Booking Process</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let ws = null;
+let debugWs = null;
+let mediaStream = null;
+let audioContext = null;
+let processor = null;
+let timerInterval = null;
+let callSeconds = 0;
+let isInCall = false;
+
+function log(msg, type='info') {
+  const el = document.getElementById('debugLog');
+  const t = new Date().toLocaleTimeString('en-US',{hour12:false});
+  const d = document.createElement('div');
+  d.className = `debug-entry ${type}`;
+  d.innerHTML = `<span class="time">${t}</span><span class="msg">${msg}</span>`;
+  el.appendChild(d);
+  el.scrollTop = el.scrollHeight;
+}
+
+function clearDebug() { document.getElementById('debugLog').innerHTML = ''; }
+
+function addTranscript(role, text) {
+  const area = document.getElementById('transcriptArea');
+  area.style.display = 'block';
+  const d = document.createElement('div');
+  d.className = `transcript-msg ${role}`;
+  d.textContent = text;
+  area.appendChild(d);
+  area.scrollTop = area.scrollHeight;
+}
+
+function updateTimer() {
+  callSeconds++;
+  const m = String(Math.floor(callSeconds/60)).padStart(2,'0');
+  const s = String(callSeconds%60).padStart(2,'0');
+  document.getElementById('callTimer').textContent = `${m}:${s}`;
+}
+
+async function toggleCall() {
+  if (isInCall) { endCall(); } else { startCall(); }
+}
+
+async function startCall() {
+  log('📞 Starting call...', 'call');
+  isInCall = true;
+  callSeconds = 0;
+  document.getElementById('callBtn').className = 'call-btn end';
+  document.getElementById('callBtn').innerHTML = '<i class="fas fa-phone-slash"></i>';
+  document.getElementById('callAvatar').classList.add('calling');
+  document.getElementById('callStatus').textContent = 'Connecting...';
+  document.getElementById('waveform').classList.add('active');
+  document.getElementById('transcriptArea').innerHTML = '';
+  document.getElementById('transcriptArea').style.display = 'none';
+  
+  timerInterval = setInterval(updateTimer, 1000);
+
+  // Connect WebSocket
+  const proto = location.protocol === 'https:' ? 'wss' : 'ws';
+  const demoPhone = encodeURIComponent(document.getElementById('demoPhone').value.trim() || '+1234567890');
+  const wsUrl = `${proto}://${location.host}/api/demo/voice-stream?phone=${demoPhone}`;
+  log(`🔌 Connecting to voice-stream...`, 'info');
+  
+  try {
+    ws = new WebSocket(wsUrl);
+    
+    ws.onopen = async () => {
+      log('✅ WebSocket connected!', 'success');
+      document.getElementById('statusDot').classList.add('active');
+      document.getElementById('statusLabel').textContent = 'Connected';
+      document.getElementById('callStatus').textContent = 'In Call';
+      
+      ws.send(JSON.stringify({type:'start'}));
+      
+      // Start mic capture
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({audio:{sampleRate:24000,channelCount:1,echoCancellation:true}});
+        audioContext = new AudioContext({sampleRate:24000});
+        const source = audioContext.createMediaStreamSource(mediaStream);
+        processor = audioContext.createScriptProcessor(4096, 1, 1);
+        
+        processor.onaudioprocess = (e) => {
+          if (!ws || ws.readyState !== WebSocket.OPEN) return;
+          const float32 = e.inputBuffer.getChannelData(0);
+          const int16 = new Int16Array(float32.length);
+          for (let i=0;i<float32.length;i++) {
+            const s = Math.max(-1,Math.min(1,float32[i]));
+            int16[i] = s < 0 ? s*0x8000 : s*0x7FFF;
+          }
+          const b64 = btoa(String.fromCharCode(...new Uint8Array(int16.buffer)));
+          ws.send(JSON.stringify({type:'audio',data:b64}));
+        };
+        
+        source.connect(processor);
+        processor.connect(audioContext.destination);
+        log('🎤 Microphone capture started (24kHz PCM16)', 'success');
+      } catch(err) {
+        log(`🔴 Mic error: ${err.message}`, 'error');
+      }
+    };
+    
+    // Audio playback queue
+    let audioQueue = [];
+    let isPlaying = false;
+    let currentAudioSource = null;
+    
+    async function playQueue() {
+      if (isPlaying || audioQueue.length === 0) return;
+      isPlaying = true;
+      while (audioQueue.length > 0) {
+        const b64 = audioQueue.shift();
+        try {
+          const raw = atob(b64);
+          const bytes = new Uint8Array(raw.length);
+          for (let i=0;i<raw.length;i++) bytes[i]=raw.charCodeAt(i);
+          const int16 = new Int16Array(bytes.buffer);
+          const float32 = new Float32Array(int16.length);
+          for (let i=0;i<int16.length;i++) float32[i] = int16[i]/32768;
+          
+          if (audioContext && audioContext.state === 'running') {
+            const buf = audioContext.createBuffer(1, float32.length, 24000);
+            buf.copyToChannel(float32, 0);
+            const src = audioContext.createBufferSource();
+            src.buffer = buf;
+            src.connect(audioContext.destination);
+            currentAudioSource = src;
+            src.start();
+            await new Promise(r => {
+                src.onended = r;
+                src.onstop = r; // Custom property to resolve on interrupt
+            });
+            currentAudioSource = null;
+          }
+        } catch(e) {}
+      }
+      isPlaying = false;
+    }
+    
+    ws.onmessage = (evt) => {
+      const msg = JSON.parse(evt.data);
+      
+      if (msg.type === 'audio') {
+        audioQueue.push(msg.data);
+        playQueue();
+      } else if (msg.type === 'interrupt') {
+        audioQueue = []; // Clear pending chunks
+        if (currentAudioSource) {
+            try {
+                currentAudioSource.stop();
+                if (currentAudioSource.onstop) currentAudioSource.onstop();
+            } catch(e) {}
+        }
+      } else if (msg.type === 'debug') {
+        const t = msg.event?.includes('error') ? 'error' : 
+                  msg.event?.includes('success') || msg.event?.includes('connected') ? 'success' :
+                  msg.event?.includes('warn') || msg.event?.includes('mock') ? 'warn' : 'info';
+        log(msg.message, t);
+      } else if (msg.type === 'transcript') {
+        addTranscript(msg.role, msg.text);
+        const t = msg.role === 'user' ? 'call' : 'info';
+        log(`${msg.role==='user'?'👤':'🤖'} ${msg.text}`, t);
+      } else if (msg.type === 'call_summary') {
+        log('📋 ═══ CALL SUMMARY ═══', 'success');
+        log(`Duration: ${msg.data.duration}`, 'info');
+        log(`User msgs: ${msg.data.user_messages} | AI msgs: ${msg.data.ai_messages}`, 'info');
+        if (msg.data.conversation) log(msg.data.conversation.replace(/\n/g,'<br>'), 'info');
+      }
+    };
+    
+    ws.onclose = () => {
+      log('🔌 WebSocket disconnected', 'warn');
+      document.getElementById('statusDot').classList.remove('active');
+      document.getElementById('statusLabel').textContent = 'Disconnected';
+    };
+    
+    ws.onerror = (e) => { log('🔴 WebSocket error', 'error'); };
+    
+  } catch(e) {
+    log(`🔴 Connection failed: ${e.message}`, 'error');
+    endCall();
+  }
+}
+
+function endCall() {
+  isInCall = false;
+  clearInterval(timerInterval);
+  
+  if (ws && ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({type:'stop'}));
+    setTimeout(() => ws.close(), 1000);
+  }
+  
+  if (processor) { processor.disconnect(); processor = null; }
+  if (audioContext) { audioContext.close(); audioContext = null; }
+  if (mediaStream) { mediaStream.getTracks().forEach(t => t.stop()); mediaStream = null; }
+  
+  document.getElementById('callBtn').className = 'call-btn start';
+  document.getElementById('callBtn').innerHTML = '<i class="fas fa-phone"></i>';
+  document.getElementById('callAvatar').classList.remove('calling');
+  document.getElementById('callStatus').textContent = 'Call ended';
+  document.getElementById('waveform').classList.remove('active');
+  
+  log('🛑 Call ended', 'warn');
+}
+
+async function testBooking() {
+  const btn = document.getElementById('testBookingBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+  
+  const payload = {
+    phone: document.getElementById('bPhone').value,
+    email: document.getElementById('bEmail').value,
+    name: document.getElementById('bName').value,
+    calendar_id: document.getElementById('bCalendar').value,
+    booking_slot: document.getElementById('bSlot').value,
+    call_summary: document.getElementById('bSummary').value
+  };
+  
+  log('📋 ═══ BOOKING TEST ═══', 'call');
+  log(`📋 Testing booking: ${payload.email} / ${payload.phone}`, 'info');
+  log('🔍 Searching GHL for existing contact...', 'info');
+  
+  try {
+    const resp = await fetch('/api/booking/process', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
+    });
+    const data = await resp.json();
+    
+    if (resp.ok) {
+      if (data.status === 'confirmed') {
+        log('✅ EXISTING CONTACT found in GHL!', 'success');
+        log(`📅 Appointment booked: ${data.appointment_id}`, 'success');
+        log(`👤 Contact ID: ${data.contact_id}`, 'success');
+      } else if (data.status === 'payment_required') {
+        log('🆕 NEW CONTACT — Stripe payment link generated', 'warn');
+        log(`💳 Payment URL: <a href="${data.payment_url}" target="_blank" style="color:var(--accent)">Open Stripe</a>`, 'warn');
+      }
+      if (data.summary) log(`📝 ${data.summary.replace(/\n/g,'<br>')}`, 'info');
+    } else {
+      log(`🔴 Booking error: ${JSON.stringify(data.detail || data)}`, 'error');
+    }
+  } catch(e) {
+    log(`🔴 Request failed: ${e.message}`, 'error');
+  }
+  
+  btn.disabled = false;
+  btn.innerHTML = '<i class="fas fa-play"></i> Test Booking Process';
+}
+
+// Connect debug WS on load
+window.addEventListener('load', () => {
+  log('🚀 Pay Minimum Tax Demo Console loaded', 'success');
+  log('💡 Click the green phone button to start a voice call', 'info');
+  log('💡 Use the booking panel below to test the full flow', 'info');
+});
+</script>
+</body>
+</html>
